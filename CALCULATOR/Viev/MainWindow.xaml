@@ -53,7 +53,7 @@
                 <Button Command="{Binding AddNine}" Grid.Column="2" Grid.Row="0"  Content="9" FontSize="50" Background="#CD5C5C"></Button>
                 <Button Command="{Binding AddSix}" Grid.Column="2" Grid.Row="1"  Content="6" FontSize="50" Background="#CD5C5C"></Button>
                 <Button Command="{Binding AddThree}" Grid.Column="2" Grid.Row="2"  Content="3" FontSize="50" Background="#CD5C5C"></Button>
-                <Button Command="{Binding Equal}" Grid.Column="2" Grid.Row="3" x:Name="qa" Content="=" FontSize="50" Background="#CD5C5C"></Button>
+                <Button Command="{Binding Calculate}" Grid.Column="2" Grid.Row="3" x:Name="qa" Content="=" FontSize="50" Background="#CD5C5C"></Button>
                 <Button Command="{Binding SelectPlus}" Grid.Column="3" Grid.Row="0" x:Name="qs" Content="+" FontSize="50" Background="#CD5C5C"></Button>
                 <Button Command="{Binding SelectMinus}" Grid.Column="3" Grid.Row="1" Content="-" FontSize="50" Background="#CD5C5C"></Button>
                 <Button Command="{Binding SelectMultiply}" Grid.Column="3" Grid.Row="2" Content="*" FontSize="50" Background="#CD5C5C"></Button>

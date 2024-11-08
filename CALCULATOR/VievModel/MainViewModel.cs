@@ -28,59 +28,26 @@ namespace CALCULATOR.VievModel
         private DelegateCommand _selectMinus;
         private DelegateCommand _selectMultiply;
         private DelegateCommand _selectDiv;
-        private DelegateCommand _equal;
+        private DelegateCommand _calculate;
         private DelegateCommand _clearError;
 
-        public DelegateCommand AddZero => _addZero ??= DelegateCommandBuilder(0);//new DelegateCommandHelper(0, this)._delegateCommand;
-        public DelegateCommand AddOne => _addOne ??= DelegateCommandBuilder(1);//new DelegateCommandHelper(1, this)._delegateCommand;
-        public DelegateCommand AddTwo => _addTwo ??= DelegateCommandBuilder(2);// new DelegateCommandHelper(2, this)._delegateCommand;
-        public DelegateCommand AddThree => _addThree ??= DelegateCommandBuilder(3);// new DelegateCommandHelper(3, this)._delegateCommand;
-        public DelegateCommand AddFour => _addFour ??= DelegateCommandBuilder(4);// new DelegateCommandHelper(4, this)._delegateCommand;
-        public DelegateCommand AddFive => _addFive ??= DelegateCommandBuilder(5);// new DelegateCommandHelper(5, this)._delegateCommand;
-        public DelegateCommand AddSix => _addSix ??= DelegateCommandBuilder(6);// new DelegateCommandHelper(6, this)._delegateCommand;
-        public DelegateCommand AddSeven => _addSeven ??= DelegateCommandBuilder(7);// new DelegateCommandHelper(7, this)._delegateCommand;
-        public DelegateCommand AddEight => _addEight ??= DelegateCommandBuilder(8);// new DelegateCommandHelper(8, this)._delegateCommand;
-        public DelegateCommand AddNine => _addNine ??= DelegateCommandBuilder(9);// new DelegateCommandHelper(9, this)._delegateCommand;
+        public DelegateCommand AddZero => _addZero ??= DelegateCommandBuilder(0);
+        public DelegateCommand AddOne => _addOne ??= DelegateCommandBuilder(1);
+        public DelegateCommand AddTwo => _addTwo ??= DelegateCommandBuilder(2);
+        public DelegateCommand AddThree => _addThree ??= DelegateCommandBuilder(3);
+        public DelegateCommand AddFour => _addFour ??= DelegateCommandBuilder(4);
+        public DelegateCommand AddFive => _addFive ??= DelegateCommandBuilder(5);
+        public DelegateCommand AddSix => _addSix ??= DelegateCommandBuilder(6);
+        public DelegateCommand AddSeven => _addSeven ??= DelegateCommandBuilder(7);
+        public DelegateCommand AddEight => _addEight ??= DelegateCommandBuilder(8);
+        public DelegateCommand AddNine => _addNine ??= DelegateCommandBuilder(9);
         public DelegateCommand AddPoint => _addPoint ??= new DelegateCommand(AddPointVoid);
-        public DelegateCommand SelectPlus => _selectPlus ??= DelegateCommandBuilder('+');//new DelegateCommandHelper('+', this)._delegateCommand;
-        public DelegateCommand SelectMinus => _selectMinus ??= DelegateCommandBuilder('-');//new DelegateCommandHelper('-', this)._delegateCommand;
-        public DelegateCommand SelectMultiply => _selectMultiply ??= DelegateCommandBuilder('*');//new DelegateCommandHelper('*', this)._delegateCommand;
-        public DelegateCommand SelectDiv => _selectDiv ??= DelegateCommandBuilder('/');//new DelegateCommandHelper('/', this)._delegateCommand;
-        public DelegateCommand Equal => _equal ??= new DelegateCommand(EqualVoid);
+        public DelegateCommand SelectPlus => _selectPlus ??= DelegateCommandBuilder('+');
+        public DelegateCommand SelectMinus => _selectMinus ??= DelegateCommandBuilder('-');
+        public DelegateCommand SelectMultiply => _selectMultiply ??= DelegateCommandBuilder('*');
+        public DelegateCommand SelectDiv => _selectDiv ??= DelegateCommandBuilder('/');
+        public DelegateCommand Calculate => _calculate ??= new DelegateCommand(CalculateVoid);
         public DelegateCommand ClearError => _clearError ??= new DelegateCommand(ClearErrorVoid);
-
-        private DelegateCommand DelegateCommandBuilder(byte digit)
-        {
-            void AddDigit(byte digit)
-            {
-                _display += digit.ToString();
-                _operationsModel.AddDigit(digit);
-                RaisePropertyChanged(nameof(Display));
-            }
-
-            void AddDigitCommandExecute()
-            {
-                AddDigit(digit);
-            }
-            return new DelegateCommand(AddDigitCommandExecute);
-        }
-
-        private DelegateCommand DelegateCommandBuilder(char operationTypeKey)
-        {
-            void SelectOperation(char operationTypeKey)
-            {
-                _display += $" {operationTypeKey} ";
-                _operationsModel.SelectOperation(SymbolTypeOperationsDictionary[operationTypeKey]);
-                RaisePropertyChanged(nameof(Display));
-            }
-
-            void SelectOperationCommandExecute()
-            {
-                SelectOperation(operationTypeKey);
-            }
-            return new DelegateCommand(SelectOperationCommandExecute);
-
-        }
 
         public MainViewModel()
         {
@@ -92,6 +59,8 @@ namespace CALCULATOR.VievModel
                 ['*'] = OperationType.multiplication,
                 ['/'] = OperationType.division,
             };
+            //КОНСТРУКТОР СОЗДАЁТ ОБЪЕКТ МОДЕЛИ _operationsModel
+            //И ОПРЕДЕЛЯЕТ СЛОВАРЬ С СИМВОЛАМИ ОПЕРАЦИЙ В КАЧЕСТВЕ КЛЮЧЕЙ И ТИПАМИ ПЕРЕЧИСЛЕНИЯ OperationType В КАЧЕСТВЕ ЗНАЧЕНИЙ
         }
 
         public string Display
@@ -108,19 +77,35 @@ namespace CALCULATOR.VievModel
             }
         }
 
-        /*internal void AddDigit(byte digit)
+        public DelegateCommand DelegateCommandBuilder(object input)
         {
+             string typeOfInput = input.GetType().ToString();
+             switch(typeOfInput)
+             {
+                 case "System.Int32" :
+                 int digitInt = (Int32)input;
+                 byte digitByte = (byte)digitInt;
+                 void AddDigitCommandExecute() => AddDigit(digitByte);
+                 return new DelegateCommand(AddDigitCommandExecute);
+
+                 case "System.Char":
+                 void SelectOperationCommandExecute() => SelectOperation((char)input);
+                 return new DelegateCommand(SelectOperationCommandExecute);
+
+                 default:
+                 return null;
+             }
+        }
+        #region PRIVATE_REGION
+        private void AddDigit(byte digit)
+        {
+            if (digit == 0 && _operationsModel.inputIntNumber == 0) 
+                return;
+            
             _display += digit.ToString();
             _operationsModel.AddDigit(digit);
             RaisePropertyChanged(nameof(Display));
         }
-
-        internal void SelectOperation(char operationTypeKey)
-        {
-            _display += $" {operationTypeKey} ";
-            _operationsModel.SelectOperation(SymbolTypeOperationsDictionary[operationTypeKey]);
-            RaisePropertyChanged(nameof(Display));
-        }*/
 
         private void AddPointVoid()
         {
@@ -128,10 +113,16 @@ namespace CALCULATOR.VievModel
             RaisePropertyChanged(nameof(Display));
         }
 
-
-        private void EqualVoid()
+        private void SelectOperation(char operationTypeKey)
         {
-            _operationsModel.Equal();
+            _display += $" {operationTypeKey} ";
+            _operationsModel.SelectOperation(SymbolTypeOperationsDictionary[operationTypeKey]);
+            RaisePropertyChanged(nameof(Display));
+        }
+
+        private void CalculateVoid()
+        {
+            _operationsModel.Calculate();
             _display = _operationsModel.Result;
             RaisePropertyChanged(nameof(Display));
         }
@@ -142,6 +133,7 @@ namespace CALCULATOR.VievModel
             _operationsModel.ClearError();
             RaisePropertyChanged(nameof(Display));
         }
+        #endregion
     }
 }
 
@@ -163,5 +155,89 @@ namespace CALCULATOR.VievModel
        private void MinusVoid() => SelectOperation('-');
        private void MultiplyVoid() => SelectOperation('*');
        private void DivVoid() => SelectOperation('/');
-       */
+//new DelegateCommandHelper(1, this)._delegateCommand;
+
+ /*
+        private DelegateCommand DelegateCommandBuilder(byte digit)
+        {
+            
+            void AddDigit(byte digit)
+            
+            {
+               
+
+                if(digit == 0 && _operationsModel.inputIntNumber == 0)
+                {
+                    return;
+                }
+                _display += digit.ToString();
+                
+                _operationsModel.AddDigit(digit);
+                
+                RaisePropertyChanged(nameof(Display));
+                
+            }
+
+            void AddDigitCommandExecute() => AddDigit(digit);
+
+            return new DelegateCommand(AddDigitCommandExecute);
+            
+        }
+
+        private DelegateCommand DelegateCommandBuilder(char operationTypeKey)
+        {
+           
+            void SelectOperation(char operationTypeKey)
+            {
+                _display += $" {operationTypeKey} ";
+                
+                _operationsModel.SelectOperation(SymbolTypeOperationsDictionary[operationTypeKey]);
+                
+                RaisePropertyChanged(nameof(Display));
+               
+            }
+
+
+            void SelectOperationCommandExecute() => SelectOperation(operationTypeKey);
+
+            return new DelegateCommand(SelectOperationCommandExecute);
+           
+        }
+        */
+/// ///////
+// 40 ЗНАЧЕНИЯ ДЛЯ СВОЙСТВ ТИПА DelegateCommand ВОЗВРАЩАЮТСЯ СПЕЦИАЛЬНЫМ МЕТОДОМ DelegateCommandBuilder КОТОРЫЙ ИМЕЕТ ПЕРЕГРУЗКУ И В КАЧЕСТВЕ ПАРАМЕТРА ПРИНИМАЕТ ЛИБО ЧИСЛО - ТОГДА РАБОТАЕТ ДЛЯ ВВЕДЕНИЯ ЦИФР В КАЛЬКУЛЯТОР, ЛИБО СИМВОЛ ТОГДА РАБОТАЕТ ДЛЯ ВВЕДЕНИЯ ОПЕРАЦИЙ В КАЛЬКУЛЯТОР
+
+//42 new DelegateCommandHelper(0, this)._delegateCommand;
+//111 МЕТОД DelegateCommandBuilder ВОЗВРАЩАЕТ ОБЪЕКТ ТИПА DelegateCommand НЕОБХОДИМ ДЛЯ СВОЙСТВ ТИПА DelegateCommand
+//112 ИМЕЕТ ДВЕ ПЕРЕГРУЗКИ - ДЛЯ С ЧИСЛОМ В КАЧЕСТВЕ ПАРАМЕТРА ДЛЯ ВВОДА ЦИФР, И С СИМВОЛОМ ДЛЯ ВВОДА КОМАНДЫ
+//114 digit - ЦИФРА ВВОДИМАЯ ПОЛЬЗОВАТЕЛЕМ 
+// 123 ВЫВОД КАЖДОЙ НОВОЙ ЦИФРЫ НА ЭКРАН ПРИ ВВОДЕ ЦИФР
+//125 ВВОД ЦИФР В МОДЕЛЬ ДЛЯ РАССЧЁТОВ (ВВОД ДАННЫХ ДЛЯ ПОСЛЕДУЮЩЕЙ ОБРАБОТКИ)
+//127 ОБНОВЛЕНИЕ ЗНАЧЕНИЯ СВОЙСТВА Display ДЛЯ ОТОБРАЖЕНИЯ КАЖДОЙ НОВОЙ ЦИФРЫ ВВОДИМОЙ ПОЛЬЗОВАТЕЛЕМ
+//134 МЕТОД ВНУТРИ КОТОРОГО МЫ НАХОДИМСЯ DelegateCommandBuilder ВОЗВРАЩАЕТ ТИП DelegateCommand, ЭТОТ ТИП ДОЛЖЕН ПРИНИМАТЬ МЕТОД В КАЧЕСТВЕ ПАРАМЕТРА, И ОН ПРИНИМАЕТ ЛОКАЛЬНЫЙ МЕТОД AddDigitCommandExecute, КОТОРЫЙ В СВОЮ ОЧЕРЕДЬ ПОЛНОСТЬЮ ССЫЛАЕТСЯ НА МЕТОД С ЧИСЛОМ В КАЧЕСТВЕ ПАРАМЕТРА КОТОРЫЙ И ЯВЛЯЕТСЯ ТЕМ МЕТОДОМ КОТОРЫЙ ПОЛНОСТЬЮ ИСПОЛНЯЕТ ВСЮ ЛОГИКУ ПО ОБРАБОТКИ ЧИСЛА ВВЕДЁНОГО ПОЛЬЗОВАТЕЛЕМ
+// 139 ПЕРЕГРУЗКА МЕТОДА DelegateCommandBuilder С СИМВОЛОМ В КАЧЕСТВЕ ПАРАМЕТРА, ДЛЯ ВВЕДЕНИЯ ПОЛЬЗОВАТЕЛЕМ КОМАНД В КАЛЬКУЛЯТОР
+
+//143 ДОБАВЛЯЕТ СИМВОЛ ОПЕРАЦИИ НА ЭКРАН
+//145 ВЫЗЫВАЕМ У МОДЕЛИ МЕТОД ВЫБОРА ОПЕРАЦИИ. ПЕРЕДАЁТ В КАЧЕСТВЕ ПАРАМЕРА ТИП ОПЕРАЦИИ ИЗ ПЕРЕЧИСЛЕНИЯ OperationType,ИЗВЛЕКАЯ ЕГО ПО КЛЮЧУ-СИМВОЛУ ИЗ СЛОВАРЯ SymbolTypeOperationsDictionary
+//147 ОБНОВЛЯЕТ ОТОБРАЖЕНИЕ СИВОЛА ОПЕРАЦИИ НА ЭКРАНЕ
+//154 СХЕМА ВЗАИМОДЕЙСТВИЯ ТИПА DelegateCommand С МЕТОДАМИ АНАЛОГИЧНА ПРЕДЫДУЩЕЙ ПЕРЕГРУЗКЕ
+
+//156 ОЧЕВИДНО ДУБЛИРОВАНИЕ КОДА - ТРЕБУЕТ РЕФАКТОРИНГА - КАК ИМЕННО Я ПОДУМАЮ
+//160 МЕТОД ДЛЯ ВВОДА ЧИСЕЛ МЕНЬШЕ ЕДИНИЦЫ - ДРОБНОЙ ЧАСТИ ЧИСЛА
+
+//165 ДЛЯ ОТОБРАЖЕНИЯ ТОЧКИ РАЗДЕЛЯЮЩЕЙ ЦЕЛУЮ И ДРОБНУЮ НА ЭКРАНЕ ПОЛЕ _display ПОЛУЧАЕТ ЭТО СТРОКОВОЕ ЗНАЧЕНИЕ ИЗ КЛАССА МОДЕЛИ В КОТОРОМ ОНО ФОРМИРУЕТСЯ СПЕЦИАЛЬНЫМ ОБРАЗОМ, В ОТЛИЧИИ ОТ ПРОСТОГО ДОБАВЛЕНИЯ ЧИСЛА ИЛИ СИМВОЛА ОПЕРАЦИИ
+//167 СТАНДАРТНОЕ ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ
+// 172 ВЫВОД РЕЗУЛЬТАТА ВЫПОЛНЕНИЯ  НА ЭКРАН
+//175 ВЫЗОВ МЕТОДА ПОЛУЧЕНИЯ РЕЗУЛЬТАТА У КЛАССА МОДЕЛИ 
+//177 ПОЛУЧЕНИЕ РЕЗУЛЬТАТА НА ЭКРАН ИЗ КЛАССА МОДЕЛИ
+
+
+//179 СТАНДАРТНОЕ ОБНОВЛЕНИЕ ЭКРАНА
+//183 СБРОС КАЛЬКУЛЯТОРА, ОЧИСТКА ВСЕХ ДАННЫХ ЭКРАНА И ТЕКУЩЕЙ ОПЕРАЦИИ
+//186 ОЧИСТКА ЭКРАНА
+//188 ВЫЗОВ МЕТОДА ОЧИСТКИ У КЛАССА МОДЕЛИ
+//190 СТАНДАРТНОЕ ОБНОВЛЕНИЕ ЭКРАНА
+
+
+
 #endregion
