@@ -79,13 +79,10 @@ namespace CALCULATOR.VievModel
 
         public DelegateCommand DelegateCommandBuilder(object input)
         {
-             string typeOfInput = input.GetType().ToString();
-             switch(typeOfInput)
+             switch(input.GetType().ToString())
              {
                  case "System.Int32" :
-                 int digitInt = (Int32)input;
-                 byte digitByte = (byte)digitInt;
-                 void AddDigitCommandExecute() => AddDigit(digitByte);
+                 void AddDigitCommandExecute() => AddDigit(byte.Parse(input.ToString()));
                  return new DelegateCommand(AddDigitCommandExecute);
 
                  case "System.Char":
